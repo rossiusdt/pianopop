@@ -7,9 +7,9 @@ export default function EventLocation() {
 
       <div className="space-y-4">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Pier Santa Maria</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">CLUBE ATLÉTICO ARAÇAMAN</h3>
           <div className="text-gray-600 space-y-1">
-            <p>Toledo, Paraná</p>
+            <p>Santo André, SP</p>
           </div>
         </div>
 

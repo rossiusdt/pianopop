@@ -7,28 +7,28 @@ export default function EventHero() {
         <div className="grid md:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight drop-shadow-lg text-white">
-              Pier Rock Festival
+              Cláudio Duarte - Santo André
             </h1>
 
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <Calendar className="w-5 h-5 mt-1 flex-shrink-0 text-[#e8a838]" />
                 <div>
-                  <p className="font-semibold text-white">11 de Julho de 2026</p>
+                  <p className="font-semibold text-white">08 de Agosto de 2026</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 mt-1 flex-shrink-0 text-[#e8a838]" />
                 <div>
-                  <p className="font-semibold text-white">A partir das 19:00</p>
+                  <p className="font-semibold text-white">A partir das 20:00</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0 text-[#e8a838]" />
                 <div>
-                  <p className="font-semibold text-white">Evento presencial em <span className="text-[#e8a838]">Pier Santa Maria - Toledo/PR</span></p>
+                  <p className="font-semibold text-white">Evento presencial em <span className="text-[#e8a838]">CLUBE ATLÉTICO ARAÇAMAN</span></p>
                 </div>
               </div>
             </div>
@@ -50,8 +50,8 @@ export default function EventHero() {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="/Gemini_Generated_Image_rpp1olrpp1olrpp1.png"
-                alt="Pier Rock Festival"
+                src="/Gemini_Generated_Image_ka4f1qka4f1qka4f.png"
+                alt="Cláudio Duarte - Santo André"
                 className="w-full h-full object-cover"
               />
             </div>

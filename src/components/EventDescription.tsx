@@ -6,13 +6,11 @@ export default function EventDescription() {
 
         <div className="space-y-4 text-gray-700">
           <p>
-            Vem aí o Pier Rock Festival! 🤘🏽🎸
+            Uma noite de muito humor, verdades e reflexões que podem transformar a sua forma de ver a vida e os relacionamentos.
           </p>
           <p>
-            Com Dino Fonseca, Nando Reis e Cíntia Férsi, o Pier Rock Festival promete uma experiência intensa, daquelas que ficam na memória! 💥🎶
-          </p>
-          <p className="font-semibold text-[#3d0f0f]">
-            Chame a sua galera! Venha curtir conosco essa noite memorável 🤩
+            Se você já ouviu o Cláudio Duarte, sabe exatamente do que estamos falando.
+            Se ainda não… essa é a oportunidade.
           </p>
         </div>
       </section>
