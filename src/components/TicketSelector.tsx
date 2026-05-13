@@ -1,33 +1,25 @@
 import { useState } from 'react';
-import { BadgeCheck, AlertCircle, Map, Minus, Plus } from 'lucide-react';
+import { BadgeCheck, AlertCircle, Sun, Moon } from 'lucide-react';
 import CheckoutModal from './CheckoutModal';
-import VenueMap, { SECTORS, type Sector } from './VenueMap';
 import { track } from '../lib/analytics';
 
-type TicketType = 'ingresso' | 'setor' | null;
+type TicketType = 'passaporte' | 'festa-unica' | null;
 
-const INGRESSO_PRICE = 20000;
-const MAX_QTY = 10;
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
-}
-
-const TIER_LABEL: Record<string, string> = {
-  ouro: 'Ouro',
-  prata: 'Prata',
-  bronze: 'Bronze',
-  'abbey-ouro': 'Abbey Ouro',
-  'abbey-prata': 'Abbey Prata',
+const DAYS = ['28 de Dezembro', '29 de Dezembro', '30 de Dezembro', '31 de Dezembro', '1 de Janeiro'];
+const SESSIONS: Record<string, { label: string; icon: React.ReactNode }> = {
+  DIA: { label: 'DIA', icon: <Sun className="w-4 h-4" /> },
+  NOITE: { label: 'NOITE', icon: <Moon className="w-4 h-4" /> },
 };
+
+const PASSAPORTE_PRICE = 99097;
+const FESTA_PRICE = 29797;
 
 export default function TicketSelector() {
   const [selected, setSelected] = useState<TicketType>(null);
   const [showConflict, setShowConflict] = useState(false);
-  const [mapOpen, setMapOpen] = useState(false);
-  const [selectedSector, setSelectedSector] = useState<Sector | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [qty, setQty] = useState(1);
 
   const selectTicket = (type: TicketType) => {
     if (selected !== null && selected !== type) {
@@ -37,74 +29,58 @@ export default function TicketSelector() {
     setShowConflict(false);
     if (selected === type) {
       setSelected(null);
-      setSelectedSector(null);
+      setSelectedDay(null);
+      setSelectedSession(null);
     } else {
       setSelected(type);
-      if (type === 'setor') setMapOpen(true);
     }
   };
 
-  const handleSectorSelect = (sector: Sector) => {
-    setSelectedSector(sector);
-  };
-
-  const handleMapClose = () => {
-    setMapOpen(false);
-    if (!selectedSector) setSelected(null);
-  };
-
   const canCheckout =
-    selected === 'ingresso' ||
-    (selected === 'setor' && selectedSector !== null);
+    selected === 'passaporte' ||
+    (selected === 'festa-unica' && selectedDay !== null && selectedSession !== null);
 
-  const totalAmount = selected === 'ingresso' ? INGRESSO_PRICE * qty : (selectedSector?.price ?? 0);
+  const totalAmount = selected === 'passaporte' ? PASSAPORTE_PRICE : FESTA_PRICE;
 
-  const selectedSummary = selected === 'ingresso'
-    ? `ÁREA VIP — ${qty}x ingresso${qty > 1 ? 's' : ''} — Pier Rock Festival`
-    : selectedSector
-      ? `${selectedSector.category === 'bistro' ? 'BISTRÔ' : 'CAMAROTE'} ${TIER_LABEL[selectedSector.tier]} (${selectedSector.label}) — Pier Rock Festival`
+  const selectedSummary = selected === 'passaporte'
+    ? 'PASSAPORTE ALL-INCLUSIVE'
+    : selected === 'festa-unica' && selectedDay && selectedSession
+      ? `FESTA ÚNICA — ${selectedDay} (${selectedSession})`
       : '';
 
-  const pixItems = selected === 'ingresso'
-    ? [{ title: 'ÁREA VIP — Pier Rock Festival', unitPrice: INGRESSO_PRICE, quantity: qty }]
-    : selectedSector
-      ? [{
-          title: `${selectedSector.category === 'bistro' ? 'Bistrô' : 'Camarote'} ${TIER_LABEL[selectedSector.tier]} (${selectedSector.label}) — Pier Rock Festival`,
-          unitPrice: selectedSector.price,
-          quantity: 1,
-        }]
-      : [];
+  const pixItems = selected === 'passaporte'
+    ? [{ title: 'PASSAPORTE ALL-INCLUSIVE — Réveillon Arcanjos 2027', unitPrice: PASSAPORTE_PRICE, quantity: 1 }]
+    : [{ title: `FESTA ÚNICA — ${selectedDay} (${selectedSession}) — Réveillon Arcanjos 2027`, unitPrice: FESTA_PRICE, quantity: 1 }];
 
   const checkoutButtonLabel = () => {
     if (!selected) return 'Selecione um Ingresso';
-    if (selected === 'setor' && !selectedSector) return 'Escolha um setor no mapa';
-    if (selected === 'ingresso') return `Finalizar Compra — ${formatCurrency(INGRESSO_PRICE * qty)}`;
+    if (selected === 'festa-unica' && !selectedDay) return 'Escolha o dia';
+    if (selected === 'festa-unica' && !selectedSession) return 'Escolha DIA ou NOITE';
     return 'Finalizar Compra';
   };
-
-  const minSectorPrice = Math.min(...SECTORS.map(s => s.price));
 
   return (
     <>
       <div className="bg-white rounded-lg shadow-lg p-6 sticky top-4">
         <p className="text-gray-700 font-medium mb-4">Escolha uma opção</p>
 
+        {/* Aviso de conflito */}
         {showConflict && (
           <div className="mb-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
             <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-amber-800 leading-snug">
-              Cada compra permite apenas um tipo de ingresso. Finalize esta compra antes de escolher outro.
+              Cada compra permite apenas um tipo de ingresso. Para adquirir ingressos diferentes, finalize esta compra e realize uma nova.
             </p>
           </div>
         )}
 
         <div className="space-y-3 mb-6">
 
-          {/* ÁREA VIP */}
+          {/* PASSAPORTE ALL-INCLUSIVE */}
           <button
-            onClick={() => selectTicket('ingresso')}
+            onClick={() => selectTicket('passaporte')}
             className={`w-full text-left border-2 rounded-xl p-4 transition-all ${
-              selected === 'ingresso'
+              selected === 'passaporte'
                 ? 'border-[#3d0f0f] bg-red-50'
                 : 'border-gray-200 hover:border-red-300'
             }`}
@@ -112,102 +88,89 @@ export default function TicketSelector() {
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-white bg-green-600 px-2 py-0.5 rounded-full uppercase tracking-wide">
-                    Promocional
+                  <span className="text-xs font-bold text-white bg-[#3d0f0f] px-2 py-0.5 rounded-full uppercase tracking-wide">
+                    Completo
                   </span>
                 </div>
-                <h3 className="font-bold text-gray-900 text-sm">ÁREA VIP</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Acesso à área VIP · 11 de Julho</p>
+                <h3 className="font-bold text-gray-900 text-sm">PASSAPORTE ALL-INCLUSIVE</h3>
+                <p className="text-xs text-gray-500 mt-0.5">28 de Dez a 1 de Jan · Acesso a todos os dias</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-lg font-bold text-gray-900">{formatCurrency(INGRESSO_PRICE)}</p>
-                <p className="text-xs text-gray-400">por ingresso</p>
+                <p className="text-lg font-bold text-gray-900">R$ 990,97</p>
               </div>
             </div>
-
-            {selected === 'ingresso' && (
+            {selected === 'passaporte' && (
               <div className="mt-3 pt-3 border-t border-red-200">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Quantidade</p>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setQty(q => Math.max(1, q - 1)); }}
-                      className="w-7 h-7 rounded-full border-2 border-[#3d0f0f] text-[#3d0f0f] flex items-center justify-center hover:bg-[#3d0f0f] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      disabled={qty <= 1}
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-base font-bold text-gray-900 w-4 text-center">{qty}</span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setQty(q => Math.min(MAX_QTY, q + 1)); }}
-                      className="w-7 h-7 rounded-full border-2 border-[#3d0f0f] text-[#3d0f0f] flex items-center justify-center hover:bg-[#3d0f0f] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      disabled={qty >= MAX_QTY}
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-xs text-gray-500">{qty} × {formatCurrency(INGRESSO_PRICE)}</p>
-                  <p className="text-sm font-bold text-[#3d0f0f]">{formatCurrency(INGRESSO_PRICE * qty)}</p>
-                </div>
+                <p className="text-xs text-[#3d0f0f] font-semibold">Acesso completo de 28 de Dezembro a 1 de Janeiro, DIA e NOITE.</p>
               </div>
             )}
           </button>
 
-          {/* CAMAROTES & BISTRÔS */}
+          {/* FESTA ÚNICA */}
           <button
-            onClick={() => selectTicket('setor')}
+            onClick={() => selectTicket('festa-unica')}
             className={`w-full text-left border-2 rounded-xl p-4 transition-all ${
-              selected === 'setor'
+              selected === 'festa-unica'
                 ? 'border-[#3d0f0f] bg-red-50'
                 : 'border-gray-200 hover:border-red-300'
             }`}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-white bg-[#e8a838] px-2 py-0.5 rounded-full uppercase tracking-wide">
-                    Exclusivo
-                  </span>
-                </div>
-                <h3 className="font-bold text-gray-900 text-sm">CAMAROTES & BISTRÔS</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Com ingressos inclusos · Escolha seu setor no mapa</p>
+                <h3 className="font-bold text-gray-900 text-sm">FESTA ÚNICA</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Escolha um dia entre 28/Dez e 1/Jan · DIA ou NOITE</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-xs text-gray-400">a partir de</p>
-                <p className="text-lg font-bold text-gray-900">{formatCurrency(minSectorPrice)}</p>
+                <p className="text-lg font-bold text-gray-900">R$ 297,97</p>
               </div>
             </div>
-
-            {selected === 'setor' && (
-              <div className="mt-3 pt-3 border-t border-red-200">
-                {selectedSector ? (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-[#3d0f0f]">
-                        {selectedSector.category === 'bistro' ? 'Bistrô' : 'Camarote'} {TIER_LABEL[selectedSector.tier]} — {selectedSector.label}
-                      </p>
-                      <p className="text-xs text-gray-500">{selectedSector.includes} ingressos · sem consumação</p>
-                    </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setMapOpen(true); }}
-                      className="text-xs text-[#3d0f0f] font-semibold flex items-center gap-1 underline underline-offset-2"
-                    >
-                      <Map className="w-3 h-3" /> Alterar
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setMapOpen(true); }}
-                    className="w-full flex items-center justify-center gap-2 bg-[#3d0f0f] text-white text-xs font-bold py-2.5 rounded-lg hover:bg-[#5a1515] transition-colors"
-                  >
-                    <Map className="w-3.5 h-3.5" /> Ver mapa de setores
-                  </button>
-                )}
-              </div>
-            )}
           </button>
+
+          {/* Seletor de dia e sessão */}
+          {selected === 'festa-unica' && (
+            <div className="border border-red-200 rounded-xl p-4 bg-red-50/50 space-y-4">
+              {/* Dia */}
+              <div>
+                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Selecione o dia</p>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {DAYS.map(day => (
+                    <button
+                      key={day}
+                      onClick={() => setSelectedDay(selectedDay === day ? null : day)}
+                      className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+                        selectedDay === day
+                          ? 'bg-[#3d0f0f] text-white border-[#3d0f0f]'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-red-400'
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sessão */}
+              <div>
+                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Selecione o período</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(SESSIONS).map(([key, { label, icon }]) => (
+                    <button
+                      key={key}
+                      onClick={() => setSelectedSession(selectedSession === key ? null : key)}
+                      className={`flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-bold transition-all border ${
+                        selectedSession === key
+                          ? 'bg-[#3d0f0f] text-white border-[#3d0f0f]'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-red-400'
+                      }`}
+                    >
+                      {icon}
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <button
@@ -222,6 +185,7 @@ export default function TicketSelector() {
           {checkoutButtonLabel()}
         </button>
 
+        {/* Selo de reembolso */}
         <div className="mt-4 flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center flex-shrink-0 shadow-sm">
             <BadgeCheck className="w-5 h-5 text-white" strokeWidth={2} />
@@ -234,13 +198,6 @@ export default function TicketSelector() {
           </div>
         </div>
       </div>
-
-      <VenueMap
-        isOpen={mapOpen}
-        onClose={handleMapClose}
-        onSelect={handleSectorSelect}
-        selectedId={selectedSector?.id ?? null}
-      />
 
       <CheckoutModal
         isOpen={modalOpen}
