@@ -13,6 +13,15 @@ export default function EventDescription() {
             Se ainda não… essa é a oportunidade.
           </p>
         </div>
+
+        <div className="mt-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-3">Mapa do Evento</h3>
+          <img
+            src="/mapavento.png"
+            alt="Mapa do evento — setores e cadeiras"
+            className="w-full max-w-sm mx-auto rounded-xl shadow-md border border-gray-100"
+          />
+        </div>
       </section>
     </div>
   );
