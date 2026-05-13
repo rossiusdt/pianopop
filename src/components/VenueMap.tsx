@@ -151,7 +151,7 @@ export default function VenueMap({ isOpen, onClose, onSelect, selectedId }: Venu
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-y-auto">
 
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-[#0a1628] to-[#0d1f3c] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-gradient-to-r from-[#1a0a0a] to-[#3d0f0f] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <div>
             <h2 className="text-white font-bold text-lg">Escolha seu Setor</h2>
             <p className="text-white/70 text-xs mt-0.5">Selecione um Camarote ou Bistrô no mapa</p>
@@ -225,8 +225,8 @@ export default function VenueMap({ isOpen, onClose, onSelect, selectedId }: Venu
           </div>
 
           {/* CAMAROTES — fundo + laterais */}
-          <div className="border-2 border-dashed border-[#0d1f3c]/40 rounded-2xl p-4 space-y-3 bg-blue-50/20">
-            <p className="text-center text-xs font-bold text-[#0d1f3c] uppercase tracking-widest mb-1">Camarote</p>
+          <div className="border-2 border-dashed border-[#3d0f0f]/40 rounded-2xl p-4 space-y-3 bg-red-50/20">
+            <p className="text-center text-xs font-bold text-[#3d0f0f] uppercase tracking-widest mb-1">Camarote</p>
 
             {/* Laterais: Abbey Prata (extrema esq) | Abbey Ouro | Ouro (centro) | Abbey Ouro | Abbey Prata (extrema dir) */}
             <div className="flex items-start justify-between gap-2">
@@ -298,7 +298,7 @@ export default function VenueMap({ isOpen, onClose, onSelect, selectedId }: Venu
                 <p className="text-xl font-bold text-gray-900">{formatCurrency(selected.price)}</p>
                 <button
                   onClick={onClose}
-                  className="mt-1 bg-gradient-to-r from-[#0a1628] to-[#0d1f3c] hover:from-[#071020] hover:to-[#1a3a6e] text-white text-sm font-bold px-5 py-2 rounded-xl transition-all"
+                  className="mt-1 bg-gradient-to-r from-[#1a0a0a] to-[#3d0f0f] hover:from-[#0d0505] hover:to-[#5a1515] text-white text-sm font-bold px-5 py-2 rounded-xl transition-all"
                 >
                   Confirmar
                 </button>
